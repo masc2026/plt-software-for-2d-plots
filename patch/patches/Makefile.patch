@@ -1,0 +1,119 @@
+--- a/plt-2.5a/Makefile
++++ b/plt-2.5a/Makefile
+@@ -9,9 +9,12 @@
+ # ----------------------------------------------------------------------------
+ # Site-dependent variables:
+ 
++THIS_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
++ROOT_DIR := $(abspath $(THIS_DIR)/..)
++
+ # PREFIX is the root of the tree into which everything is ultimately
+ # installed.
+-PREFIX=/usr/local
++PREFIX=$(ROOT_DIR)
+ 
+ # INSTALL_PREFIX is usually the same as PREFIX, but 'rpm' or 'rpmbuild' resets
+ # it to the root of a temporary build tree when making a set of RPMs.  We
+@@ -34,14 +37,17 @@
+ 
+ # XINCDIR is the directory in which the X11 header (*.h) files are kept.  Only
+ # read permission is required in XINCDIR.
+-XINCDIR = /usr/include/X11
++#XINCDIR = /usr/include/X11
+ # XINCDIR = /usr/X11R6/include  # for Cygwin/MS Windows
+ 
++XINCDIR=/usr/X11/include
++
+ # XLIBDIR is the directory in which the X11 client libraries are kept.  Only
+ # read permission is required in XLIBDIR.
+-XLIBDIR = /usr/lib
++#XLIBDIR = /usr/lib
+ # XLIBDIR = /usr/X11/lib  # for Mac OS X
+ # XLIBDIR = /usr/X11R6/lib  # for Cygwin/MS Windows
++XLIBDIR=/usr/X11/lib
+ 
+ # CFLAGS is a set of C compiler options.  These may include:
+ #  -g		   (to save debugging symbols)
+@@ -50,7 +56,22 @@
+ #  -DNO_VSNPRINTF  (if your C library is missing vsnprintf;  but note that
+ #	 	    the alternative, using vsprintf, is a security problem,
+ #		    and that it's better to update your C library if you can)
+-CFLAGS = -g -DPLT_VERSION='\"$(PLTVER)\"'
++CFLAGS = -Wall -Wpedantic -DPLT_VERSION='\"$(PLTVER)\"' \
++         -Wno-implicit-int \
++         -Wno-invalid-utf8 \
++         -Wno-logical-op-parentheses \
++         -Wno-sometimes-uninitialized \
++         -Wno-uninitialized \
++         -Wno-strict-prototypes \
++         -Wno-missing-braces \
++         -Wno-array-bounds \
++         -Wno-unused-variable \
++         -Wno-pointer-sign \
++         -Wno-parentheses \
++         -Wno-gnu-pointer-arith \
++         -Wno-format \
++         -Wno-invalid-source-encoding \
++         -Wno-unused-but-set-variable
+ 
+ # TARGETS is a list of the executables to be compiled by default.  It may
+ # include any of:
+@@ -60,18 +81,18 @@
+ #  xpltwin	window-creation program needed by xplt
+ TARGETS = lwplt makeplthead xplt xpltwin
+ 
+-# ----------------------------------------------------------------------------
+-# Pathnames of programs used by 'plt' that are not part of the 'plt' package
+-#
+-# These programs are not required for minimal functionality of 'plt', but they
+-# are used to provide additional features.  All are free, open source software.
+-# These definitions override those in src/Makefile if 'make' is invoked from
+-# this directory.
++# --- Architektur-Check für Homebrew-Pfade ---
++ARCH := $(shell uname -m)
+ 
+-# CONVERT is the full pathname of the 'convert' application (part of
+-# ImageMagick, http://www.imagemagick.org), needed to make PNG plots.
+-CONVERT = /usr/bin/convert
++ifeq ($(ARCH),arm64)
++    BREW_PREFIX ?= /opt/homebrew
++else
++    BREW_PREFIX ?= /usr/local
++endif
+ 
++CONVERT  ?= $(BREW_PREFIX)/bin/magick
++PSTOPDF  ?= $(BREW_PREFIX)/bin/ps2pdf
++
+ # EPSTOPDF is the full pathname of the 'epstopdf' application, available from
+ # CTAN at http://tug.ctan.org/tex-archive/support/epstopdf/, and included
+ # in the tetex, TeX Live (http://www.tug.org/texlive/), and MiKTeX
+@@ -97,7 +118,7 @@
+ PREFIX=$(PREFIX) INSTALL_PREFIX=$(INSTALL_PREFIX) \
+  BINDIR=$(BINDIR) MAN1DIR=$(MAN1DIR) PSPDIR=$(PSPDIR) XINCDIR=$(XINCDIR) \
+  XLIBDIR=$(XLIBDIR) CFLAGS="$(CFLAGS)" CONVERT=$(CONVERT) EPSTOPDF=$(EPSTOPDF) \
+- GV=$(GV) LPR=$(LPR) PRINT="$(PRINT)"
++ PSTOPDF=$(PSTOPDF) GV=$(GV) LPR=$(LPR) PRINT="$(PRINT)"
+ # It should not be necessary to modify anything below this line.
+ # ----------------------------------------------------------------------------
+ 
+@@ -121,7 +142,8 @@
+ 	  then echo "    make xdemo"; \
+ 	       echo "in an X terminal window, or by typing:"; fi )
+ 	@echo "    make psdemo"
+-
++	@echo "on macOS make macdemo"
++	
+ # 'make uninstall' removes everything installed by 'make install'.
+ uninstall:
+ 	cd src; $(MAKE) uninstall
+@@ -175,6 +197,10 @@
+ psdemo:	all
+ 	cd doc; $(MAKE) psdemo
+ 
++# Show figures from the plt Tutorial and Cookbook in the macOS Preview app as PDF files.
++macdemo: all
++	cd doc; $(MAKE) macdemo
++
+ # Create a distribution file in the parent directory using GNU tar.
+ tarball:
+ 	touch timestamp

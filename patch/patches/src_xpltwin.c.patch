@@ -1,0 +1,33 @@
+--- a/plt-2.5a/src/xpltwin.c
++++ b/plt-2.5a/src/xpltwin.c
+@@ -91,7 +91,11 @@
+ int pixmapWidth, pixmapHeight;
+ Atom atom;
+ 
+-main(int argc, char **argv)
++void WindowExpose(XExposeEvent *event);
++
++void WindowConfigure(int width, int height);
++
++int main(int argc, char **argv)
+ {
+   static char *geometry;
+   static int x, y, xDim, yDim;
+@@ -234,7 +238,7 @@
+   }
+ }
+ 
+-WindowExpose(XExposeEvent *event)
++void WindowExpose(XExposeEvent *event)
+ {
+   XEvent anotherEvent;
+ 
+@@ -250,7 +254,7 @@
+     WindowExpose((XExposeEvent *)(&anotherEvent));
+ }
+ 
+-WindowConfigure(int width, int height)
++void WindowConfigure(int width, int height)
+ {
+   Drawable drawable[2];
+   Pixmap newPixmap;

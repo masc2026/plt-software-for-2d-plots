@@ -1,0 +1,11 @@
+--- a/plt-2.5a/src/window.c
++++ b/plt-2.5a/src/window.c
+@@ -182,7 +182,7 @@
+ 	    case 'A': a = 0; break;
+ 	    case 'X': a = &xa; break;
+ 	    case 'Y': a = &ya; break;
+-	    default: err(NO, "Bad element `%c' for suppress", chr);
++	    default: errpl(NO, "Bad element `%c' for suppress", chr);
+ 	    }
+ 	}
+ }

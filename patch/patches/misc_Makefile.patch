@@ -1,0 +1,22 @@
+--- a/plt-2.5a/misc/Makefile
++++ b/plt-2.5a/misc/Makefile
+@@ -35,11 +35,11 @@
+ # You must have write permission in BINDIR.
+ install:	all
+ 	-mkdir -p $(BINDIR)
+-	cp ftable pltf imageplt $(BINDIR)
+-	cd $(BINDIR); chmod 755 ftable pltf imageplt
++	cp macpltf ftable pltf imageplt $(BINDIR)
++	-cd $(BINDIR) && chmod 755 macpltf ftable pltf imageplt
+ 
+ uninstall:
+-	cd $(BINDIR); rm -f ftable ftable.exe pltf imageplt imageplt.exe
++	-cd $(BINDIR) && rm -f ftable ftable.exe macpltf pltf imageplt imageplt.exe
+ 
+ # ftable: given a function of x, ftable makes a bc script for generating a
+ # table of function values.
+@@ -53,3 +53,4 @@
+ # Remove binary and backup files.
+ clean:
+ 	rm -f ftable ftable.exe imageplt imageplt.exe *.o *~ core
++	rm -rf *.dSYM

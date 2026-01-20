@@ -1,0 +1,172 @@
+--- a/plt-2.5a/src/xw.c
++++ b/plt-2.5a/src/xw.c
+@@ -38,10 +38,13 @@
+ 	
+ #include "plt.h"
+ #include <signal.h>
++#include <stdlib.h>
++#include <unistd.h>
+ #include <sys/time.h>
+ #include <X11/X.h>
+ #include <X11/Xlib.h>
+ #include <X11/Xatom.h>
++#include <X11/Xutil.h>
+ 
+ #define X(N)	(int)(xScl*((N)-xMin))
+ #define Y(N)	(int)(yDim - (int)(yScl*((N)-yMin)))
+@@ -69,10 +72,10 @@
+ /* Prototypes of functions defined in this module */
+ void openpl(void);
+ void closepl(void);
+-void erase(void);
++void erasepl(void);
+ void space(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void label(char *lbl);
+-void move(Ptype x, Ptype y);
++void movepl(Ptype x, Ptype y);
+ void line(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void cont(Ptype x, Ptype y);
+ void plabel(char *lbl, Ptype x, Ptype y, char *just, double angle);
+@@ -194,7 +197,7 @@
+     XFlush(dpy);
+ }
+ 
+-void erase(void)
++void erasepl(void)
+ {
+     if (pixmap != window) {
+ 	XSetForeground(dpy, gc, WhitePixel(dpy,screen));
+@@ -214,7 +217,7 @@
+     yScl = (double)yDim/(y1-y0+1);
+ }
+ 
+-void move(Ptype x, Ptype y)
++void movepl(Ptype x, Ptype y)
+ {
+     xLast = x;
+     yLast = y;
+@@ -252,7 +255,7 @@
+     XGCValues gcvalues;
+ 
+     if (lw < 0) {
+-	err(NO, "Bad line width: %.5lg", lw);
++	errpl(NO, "Bad line width: %.5lg", lw);
+ 	lw = 0.3;
+     }
+     if (prev_lw != lw) {
+@@ -267,7 +270,7 @@
+     char greystring[8];
+ 
+     if (grey < 0 || grey > 1) {
+-	err(NO, "Bad grey value: %.5lg", grey);
++	errpl(NO, "Bad grey value: %.5lg", grey);
+ 	grey = 0;
+     }
+     sprintf(greystring, "grey%02d", (int)(grey*100.0));
+@@ -458,11 +461,11 @@
+ 	;
+ 
+     if (f->code == NULL) {
+-	err( NO, "Unknown font: %s -- Using: %s", name, DEFAULT_FONT);
++	errpl( NO, "Unknown font: %s -- Using: %s", name, DEFAULT_FONT);
+ 	f->name = DEFAULT_FONT;
+     }
+     if (ps < 0) {
+-	err( NO, "Bad font size: %.5lg -- Using %g", ps, DEFAULT_PS);
++	errpl( NO, "Bad font size: %.5lg -- Using %g", ps, DEFAULT_PS);
+ 	ps = DEFAULT_PS;
+     }
+ 
+@@ -569,9 +572,9 @@
+     default:  errflag = YES; break;
+     }
+     if (errflag)
+-	err(NO, "Unknown justification mode `%s'", just);
++	errpl(NO, "Unknown justification mode `%s'", just);
+     else {
+-	move(x, y);
++	movepl(x, y);
+ 	label(lbl);
+ 	lastx = x + xsize;
+ 	lasty = y + chht/3;
+@@ -602,7 +605,7 @@
+     default:  errflag = YES; break;
+     }
+     if (errflag)
+-	err(NO, "Unknown justification mode '%s'", just);
++	errpl(NO, "Unknown justification mode '%s'", just);
+ 
+     lastx = x + ysize/3;
+     lasty = y;
+@@ -675,7 +678,7 @@
+     else if (fabs(angle-90) < 1)
+ 	label90(lbl, x, y, just);
+     else
+-	err(NO, "Bad angle %g in for plabel(%s,...)", just, lbl);
++	errpl(NO, "Bad angle %g in for plabel(%s,...)", just, lbl);
+ }
+ 
+ /********* Output the tick labels and axis label for the axes *************/
+@@ -717,7 +720,7 @@
+     else if (strcmp(what,"YTR") == 0)
+ 	label90(lbl, x+yax_roff, y, "CT");
+     else
+-	err(YES, "Bad call: alabel(%s,...)", what);
++	errpl(YES, "Bad call: alabel(%s,...)", what);
+ }
+ 
+ /****************** Output log tick labels for the axes ********************/
+@@ -767,7 +770,7 @@
+ 	    yax_roff = off;
+     }
+     else
+-	err(YES, "Bad call: elabel(%s,...)", what);
++	errpl(YES, "Bad call: elabel(%s,...)", what);
+ }
+ 
+ /****** Scatterplot characters or symbols with or without error bars *******/
+@@ -842,15 +845,15 @@
+     }
+ 
+     if (ypos-y >= ydmax) {
+-	move(x+xdmin, ypos);
++	movepl(x+xdmin, ypos);
+ 	cont(x+xdmax, ypos);
+-	move(x, ypos);
++	movepl(x, ypos);
+ 	cont(x, y+ydmax);
+     }
+     if (yneg-y <= ydmin) {
+-	move(x+xdmin, yneg);
++	movepl(x+xdmin, yneg);
+ 	cont(x+xdmax, yneg);
+-	move(x, yneg);
++	movepl(x, yneg);
+ 	cont(x, y+ydmin);
+     }
+ }
+@@ -886,7 +889,7 @@
+ 	    XDrawLines(dpy, pixmap, gc, vertices, nvertices, CoordModeOrigin);
+ 	    nvertices = 0;
+ 	}
+-	move(x, y);
++	movepl(x, y);
+ 	pcont(x, y);
+ 	x0 = x;
+ 	y0 = y;
+@@ -941,7 +944,7 @@
+ 	nvertices = 0;
+ 	break;
+     default:
+-	err(YES, "Bad PolyDef() code %d", what);
++	errpl(YES, "Bad PolyDef() code %d", what);
+     }
+ }
+ 
+@@ -959,5 +962,5 @@
+ 	*ysize = width;
+     }
+     else
+-	err(NO, "Bad angle %lg in for strsize(%s,...)", angle, str);
++	errpl(NO, "Bad angle %lg in for strsize(%s,...)", angle, str);
+ }

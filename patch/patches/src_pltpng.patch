@@ -1,0 +1,40 @@
+--- a/plt-2.5a/src/pltpng
++++ b/plt-2.5a/src/pltpng
+@@ -1,6 +1,5 @@
+ #! /bin/sh
+ # file: pltpng			G. Moody	22 February 2002
+-#				Last revised:    25 March 2009
+ # Convert a PostScript file to a PNG image, using ImageMagick's 'convert'.
+ # Unlike 'convert', this script can be used in a pipeline since it can read
+ # the standard input and write to the standard output.
+@@ -10,12 +9,23 @@
+   1) case $1 in
+         *.eps) PSFILE=$1; PNGFILE=`basename $1 .eps`.png ;;
+         *.ps)  PSFILE=$1; PNGFILE=`basename $1 .ps`.png  ;;
+-	*) echo "usage: $0 [ file.[e]ps ]" ;;
++    *) echo "usage: $0 [ file.[e]ps ]" ;;
+      esac ;;
+   *) echo "$0: Too many arguments ($#). Only need one: the PostScript filespec";;
+ esac
+ 
+-CONVERT -crop 0x0 -density 288 -geometry 25% $PSFILE $PNGFILE
++# Prüfen, ob CONVERT nur "magick" ist (ohne das Wort convert)
++case "CONVERT" in
++    *magick*)
++        # IM7 Syntax: Erst die Auflösung, dann das File laden, dann bearbeiten
++        CONVERT -density 288 "$PSFILE" -crop 0x0 -geometry 25% "$PNGFILE"
++        ;;
++    *)
++        # IM6 Syntax
++        CONVERT -crop 0x0 -density 288 -geometry 25% "$PSFILE" "$PNGFILE"
++        ;;
++esac
++
+ # -crop 0x0: crop tightly around the image
+ # -density 288 -geometry 25%: improve the image quality by rasterizing at 4
+ #    times the default resolution, then decimating to the standard resolution
+@@ -25,4 +35,3 @@
+ case $# in
+   0) cat $PNGFILE; rm -f $PNGFILE $PSFILE;;
+ esac
+-
