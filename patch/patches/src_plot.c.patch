@@ -1,0 +1,103 @@
+--- a/plt-2.5a/src/plot.c
++++ b/plt-2.5a/src/plot.c
+@@ -104,7 +104,7 @@
+ 	    while (*cp >= '0' && *cp <= '9')
+ 		n = 10*n + ((*cp++ -'0')&0177);
+ 	    if (n > Data.nCols)
+-		err(YES, "Bad column: %d", n);
++            errpl(YES, "Bad column: %d", n);
+ 	    use[lastuse++] = n;
+ 	    useall = NO;
+ 	}
+@@ -132,10 +132,10 @@
+ 	case SCATTER:
+ 	case SYMBOL_STD:
+ 	case SCATTER_STD: GetScatInfo(plt); break;
+-	default: err(YES, "Bad plot mode spec `%c'", cp[-1]); break;
++	default: errpl(YES, "Bad plot mode spec `%c'", cp[-1]); break;
+ 	}
+ 	if (nextuse != lastuse)
+-	    err(YES, "Too many columns for `%c'", plt->pm);
++        errpl(YES, "Too many columns for `%c'", plt->pm);
+ 	lastuse = nextuse = 0;
+ 	while (PMBLANK(*cp))
+ 	    cp++;
+@@ -146,13 +146,13 @@
+ 		str[n++] = c = *cp++;
+ 	    } while(c && c != ']' && c != ')');
+ 	    if (c != ']' && c != ')')
+-		err(YES, "Unterminated %c in `%s'", cf, Plot.pModes);
++            errpl(YES, "Unterminated %c in `%s'", cf, Plot.pModes);
+ 	    str[n-1] = 0;
+ 	    plt->fgName = StringSave(str);
+ 	}
+     }
+     if (*cp)
+-	err(YES, "Not enough columns for `%s'", cp);
++        errpl(YES, "Not enough columns for `%s'", cp);
+ }
+ 
+ static void GetScatInfo(PltPtr plt)
+@@ -202,8 +202,8 @@
+ 	       strncmp(s->name,symname,nchrs) == 0) 
+ 		break;
+ 	    if (s+1 == ENDP(sym))
+-		err(YES, "No symbol type `%s'", symname);
+-	}		
++            errpl(YES, "No symbol type `%s'", symname);
++	}
+ 	plt->pc = *sym[s->n].name;	/* ... and this is why !!!!!! */
+ 	plt->symbol = YES;
+     }
+@@ -221,13 +221,13 @@
+ 	    if (nextuse < lastuse)
+ 		*col++ = use[nextuse++];
+ 	    else
+-		err(YES, "Too few columns for `%c'", plt->pm);
++            errpl(YES, "Too few columns for `%c'", plt->pm);
+ 	}
+ 	else {
+ 	    if (nextcol < Data.nCols)
+ 		*col++ = nextcol++;
+ 	    else
+-		err(YES, "Ran out of columns for `%c'", plt->pm);
++            errpl(YES, "Ran out of columns for `%c'", plt->pm);
+ 	}
+     }
+ }
+@@ -449,7 +449,7 @@
+ 	if (n >= 0 && n < pstr.n)
+ 	    plabel(pstr.list[n], x, y, pstr.just, 0.0);
+ 	else
+-	    err(NO, "Plot string %g undefined", dbl);
++        errpl(NO, "Plot string %g undefined", dbl);
+     }
+     else {
+ 	sprintf(lbl, "%g", dbl);
+@@ -464,7 +464,7 @@
+ 
+     n = *dptr;
+     if (fgstr.list == 0 || n < 0 || n >= fgstr.n)
+-	err(YES, "No string for font index %lg", *dptr);
++        errpl(YES, "No string for font index %lg", *dptr);
+     return (fgstr.list[n]);
+ }
+ 
+@@ -476,7 +476,7 @@
+ 	xd = (p->xfull+256)/512;
+ 	yd = (p->yfull+195)/390;
+     }
+-    move(x-xd, y-yd);
++    movepl(x-xd, y-yd);
+     cont(x+xd, y-yd);
+     cont(x+xd, y+yd);
+     cont(x-xd, y+yd);
+@@ -529,7 +529,7 @@
+ 	return (NO);
+     }
+     if (!draw || oldOff)
+-	move(x, y);
++	movepl(x, y);
+     else
+ 	cont(x, y);
+     oldOff = off;

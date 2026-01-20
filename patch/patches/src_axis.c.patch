@@ -1,0 +1,38 @@
+--- a/plt-2.5a/src/axis.c
++++ b/plt-2.5a/src/axis.c
+@@ -234,7 +234,7 @@
+ static void MinmaxSetup(AxisPtr a)
+ {
+     if (a->min != DEFAULT && a->max != DEFAULT && a->min > a->max)
+-	err(YES, "%c axis reversed", a->name);
++	errpl(YES, "%c axis reversed", a->name);
+     if (a->min != DEFAULT)
+ 	a->acchi = 0;
+     if (a->max != DEFAULT)
+@@ -312,7 +312,7 @@
+ 	      (double)(ywmax-ywmin)/p->yfull)/(tend-tbeg);
+ 
+     if (ticklogic)
+-	err(NO, "tbeg, tend, sfract: %g %g %g\n", tbeg, tend, sfract);
++	errpl(NO, "tbeg, tend, sfract: %g %g %g\n", tbeg, tend, sfract);
+     if (a->extra == NULL)
+ 	a->extra = (sfract < 0.07) ? "n" : "y";
+     nsubtick = 0;
+@@ -349,7 +349,7 @@
+     }
+ 
+     while (*gridtype) {
+-	if (!getstr(&gridtype, &spec))
++	if (!getstrpl(&gridtype, &spec))
+ 	    continue;			
+ 
+ 	if (strcmp(spec,"out") == 0)
+@@ -373,7 +373,7 @@
+ 	else if(strncmp(spec,"sub",3) == 0)
+ 	    gtype |= SUB_GRID;
+ 	else
+-	    err(YES, "Unrecognized tick spec `%s'", spec);
++	    errpl(YES, "Unrecognized tick spec `%s'", spec);
+ 	while(*gridtype == ',')
+ 	    gridtype++;
+     }

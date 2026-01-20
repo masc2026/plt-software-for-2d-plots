@@ -1,0 +1,40 @@
+--- a/plt-2.5a/src/tick.c
++++ b/plt-2.5a/src/tick.c
+@@ -88,7 +88,7 @@
+     lo.dbl = (a->min == DEFAULT) ? ((a->name == 'x') ? xmin : ymin) : a->min;
+     hi.dbl = (a->max == DEFAULT) ? ((a->name == 'x') ? xmax : ymax) : a->max;
+     if (lo.dbl == hi.dbl) {
+-	err(NO, "All %c values are %lg", a->name, lo.dbl);
++        errpl(NO, "All %c values are %lg", a->name, lo.dbl);
+ 	if (lo.dbl == 0)
+ 	    hi.dbl = 1;
+ 	else {
+@@ -106,8 +106,8 @@
+ 		  tmark.dbl > hi.dbl);
+     MakeLongs();
+     if (ticklogic) {
+-	err(NO, "\nGIVEN: %g  %g  (%g)\n", lo.dbl, hi.dbl, tmark.dbl);
+-	err(NO,
++        errpl(NO, "\nGIVEN: %g  %g  (%g)\n", lo.dbl, hi.dbl, tmark.dbl);
++        errpl(NO,
+ 	    "    MIN     MAX     TICK  NTICK   DEC PLACES    COST   TMARK\n");
+     }
+     tcbest = tcs;
+@@ -121,7 +121,7 @@
+ 	if (tcbest->cost > tc->cost)
+ 	    tcbest = tc;
+ 	if (ticklogic)
+-	    err(NO,"%8.3f%8.3f%8.3f%6d%5d%3d/%d%3d/%d%8.3f%8.3f\n",
++        errpl(NO,"%8.3f%8.3f%8.3f%6d%5d%3d/%d%3d/%d%8.3f%8.3f\n",
+ 		tc->min*tenf, tc->max*tenf, tc->tick*tenf,
+ 		tc->ntick, tc->tickdp, tc->mindp, tc->minfit,
+ 		tc->maxdp, tc->maxfit, tc->cost, tc->tmark*tenf);
+@@ -151,7 +151,7 @@
+ 	    a->tmark = a->max;
+     }
+     if (ticklogic)
+-	err(NO, "CHOOSE: %g  %g  %g using %s  (%g)\n",
++        errpl(NO, "CHOOSE: %g  %g  %g using %s  (%g)\n",
+ 	    a->min, a->max, a->tick, a->pfm, a->tmark);
+ }
+ 

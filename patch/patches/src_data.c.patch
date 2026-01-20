@@ -1,0 +1,106 @@
+--- a/plt-2.5a/src/data.c
++++ b/plt-2.5a/src/data.c
+@@ -141,7 +141,7 @@
+ 	}
+ 	if (Data.nPts+Data.nCols >= Data.maxPts) {
+ 	    if (Data.maxPts >= MAXNPTS)
+-		err(YES, "Too many points");
++		errpl(YES, "Too many points");
+ 	    addPts = 10000;
+ 	    if (Data.maxPts+addPts > MAXNPTS)
+ 		addPts = MAXNPTS-Data.maxPts;
+@@ -368,10 +368,11 @@
+ 	return (n);
+     }
+     if (n >= MAXTC)
+-	err(YES, "Too many columns in %s, row %ld", f->name, f->row);
++	errpl(YES, "Too many columns in %s, row %ld", f->name, f->row);
+     if (lptr >= linebuf + MAXLEN)
+-	err(YES, "Row %ld too long in %s", f->row, f->name);
+-    err(YES, "Error in get_strings");
++	errpl(YES, "Row %ld too long in %s", f->row, f->name);
++    errpl(YES, "Error in get_strings");
++    return (n);
+ }
+ 
+ static int data_files(char **list)
+@@ -394,7 +395,7 @@
+ 
+     while (*list) {
+ 	if (nf == MAXFIL)
+-	    err(YES, "Can't have more than %d files", MAXFIL);
++	    errpl(YES, "Can't have more than %d files", MAXFIL);
+ 	f = &datafile[nf];
+ 	if (**list == ':') {
+ 	    args = *(list++) + 1;
+@@ -414,11 +415,11 @@
+ 	else {
+ 	    if (!DIGIT(**list)) {
+ 		if (*list == 0)
+-		    err(YES, "no name specified for required input file");
++		    errpl(YES, "no name specified for required input file");
+ 		if (strcmp(*list, "stdin") == 0)
+ 		    f->fp = stdin;
+ 		if ((f->fp = fopen(*list, "r")) == 0)
+-		    err(YES, "can't open %s\n", *list);
++		    errpl(YES, "can't open %s\n", *list);
+ 		f->name = *list++;
+ 	    }
+ 	    while (*list && DIGIT(**list)) {
+@@ -431,7 +432,7 @@
+ 		else 
+ 		    f->col[f->nc] = f->ac = ALL;
+ 		if (++f->nc > MAXCOL)
+-		    err(YES, "Can't take more than %d columns from one file",
++		    errpl(YES, "Can't take more than %d columns from one file",
+ 			  MAXCOL);
+ 	    }
+ 	    nf++;
+@@ -450,16 +451,16 @@
+ 
+ 		    ungetc(c, f->fp);
+ 		    if ((f->tc = get_strings(f,1)) > sizeof(str)/2)
+-			err(YES, "Too many columns in %s", f->name);
++			errpl(YES, "Too many columns in %s", f->name);
+ 		}
+ 		if (f->tc < f->lc)
+-		    err(YES, "Too few columns in %s", f->name);
++		    errpl(YES, "Too few columns in %s", f->name);
+ 	    }
+ 	    
+ 	    if ((f->nb=f->raw*f->tc) > sizeof(linebuf))
+-		err(YES, "Too many columns in %s", f->name);
++		errpl(YES, "Too many columns in %s", f->name);
+ 	    if (f->ac == ALL) f->lc = f->tc;
+-	    if (f->lc == 0) err(YES, "No columns from %s", f->name);
++	    if (f->lc == 0) errpl(YES, "No columns from %s", f->name);
+ 	    if (f->rf == -1) f->rf = 0;
+ 	    if (f->rt == -1) f->rt = 07777777777;
+ 	    if (f->rs == -1) f->rs = 1;
+@@ -474,7 +475,7 @@
+ 	    while (f->rf > f->row) {
+ 		data_row(f);
+ 		if (f->eof)
+-		    err(YES, "Only %ld rows in %s", f->row-1, f->name);
++		    errpl(YES, "Only %ld rows in %s", f->row-1, f->name);
+ 	    }
+ 	    for (n=0; n < f->nc; n++)
+ 		grand_tot += (f->col[n] == ALL) ? f->tc : 1;
+@@ -548,7 +549,7 @@
+ 	if (f->eof)
+ 	    return (NO);
+ 	if (c < f->lc) {
+-	    err(NO, "Too few columns in file %s row %ld\n", f->name, f->row);
++	    errpl(NO, "Too few columns in file %s row %ld\n", f->name, f->row);
+ 	    f->eof = YES;
+ 	    return (NO);
+ 	}
+@@ -562,7 +563,7 @@
+ 	return (YES);
+ 
+     if (n != 1)
+-	err(NO, "Row %ld incomplete in %s\n", f->row, f->name);
++	errpl(NO, "Row %ld incomplete in %s\n", f->row, f->name);
+ 
+     f->eof = YES;
+     return (NO);

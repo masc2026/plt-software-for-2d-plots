@@ -1,0 +1,70 @@
+--- a/plt-2.5a/doc/Makefile
++++ b/plt-2.5a/doc/Makefile
+@@ -314,7 +314,7 @@
+ 	 lwcat -eps >figure7.ps
+ 
+ genex10:	genex10.c
+-	$(CC) -o genex10 genex10.c -lm
++	$(CC) $(CFLAGS) -o genex10 genex10.c -lm
+ 
+ example10.data:	genex10
+ 	./genex10 >example10.data
+@@ -355,7 +355,7 @@
+ 	plt -T lw example9.data -f example9.format | lwcat -eps >figure9.ps
+ 
+ gencos:		gencos.c
+-	$(CC) -o gencos gencos.c -lm
++	$(CC) $(CFLAGS) -o gencos gencos.c -lm
+ 
+ cos2.data:	gencos
+ 	./gencos >cos2.data
+@@ -373,7 +373,7 @@
+ 	plt -T lw -f linestyles.format | lwcat -eps >linestyles.ps
+ 
+ genex14:	genex14.c
+-	$(CC) -o genex14 genex14.c -lm
++	$(CC) $(CFLAGS) -o genex14 genex14.c -lm
+ 
+ example14.data:	genex14
+ 	./genex14 >example14.data
+@@ -413,10 +413,10 @@
+ 	imageplt -d 5 3 image.data | plt -T lw 0 1 2 -pc | lwcat -eps >image.ps
+ 
+ henon:		henon.c
+-	$(CC) -o henon henon.c
++	$(CC) $(CFLAGS) -o henon henon.c
+ 
+ henon.ps.gz:	henon.c
+-	$(CC) -o henon henon.c
++	$(CC) $(CFLAGS) -o henon henon.c
+ 	./henon | plt -T lw % -p s. -X -1.5 1.5 -Y -.5 .5 \
+ 	 -t "Henon attractor" | lwcat -eps >henon.ps
+ 	grep BoundingBox henon.ps | head -1 >henon.ps.bb
+@@ -430,6 +430,10 @@
+ psdemo:		henon example10.data cos2.data example14.data
+ 	./psdemo.sh
+ 
++# 'make macdemo': show the figures from the book with macOS Preview
++macdemo:    henon example10.data cos2.data example14.data
++	./macdemo.sh
++
+ #.............................................................................
+ # a few more examples, not included in the book:
+ 
+@@ -454,13 +458,14 @@
+ install:
+ 	-mkdir -p $(MAN1DIR)
+ 	cp $(MANPAGES) $(MAN1DIR)
+-	cd $(MAN1DIR); gzip -f $(MANPAGES); chmod 644 $(GZMANPAGES)
++	-cd $(MAN1DIR) && gzip -f $(MANPAGES); chmod 644 $(GZMANPAGES)
+ 
+ uninstall:
+-	cd $(MAN1DIR); rm -f $(GZMANPAGES)
++	-cd $(MAN1DIR) && rm -f $(GZMANPAGES)
+ clean:
+ 	rm -f *~ *.log core book.aux book.dvi book.idx book.ilg book.ind \
+ 	 book.lof book.log book.toc gencos genex10 genex14 henon *.exe \
+ 	 *.1.aux *.1.dvi henon.ps.gz henon.ps.bb example7.axes \
+ 	 figure10.ps example10.data labels.ps fontgroup1.ps figure14.ps \
+ 	 example14.data cos2.data $(PDFFIGURES)
++	-rm -rf *.dSYM

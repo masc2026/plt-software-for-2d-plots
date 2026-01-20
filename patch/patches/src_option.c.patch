@@ -1,0 +1,176 @@
+--- a/plt-2.5a/src/option.c
++++ b/plt-2.5a/src/option.c
+@@ -90,7 +90,7 @@
+ 	    break;
+ 	o = lookup2(argv, &n);
+ 	if(o->mode & NOTARGV)
+-	    err(YES, "Can't use `%s' on command line", o->name);
++	    errpl(YES, "Can't use `%s' on command line", o->name);
+ 	nflds = 0;
+ 	fgs = 0;
+ 	while (n < argc && nflds < o->maxflds && !ISOPT(argv[n])) {
+@@ -148,9 +148,9 @@
+ 	if (type == 0 && ptr.c == 0)
+ 	    break;
+ 	if (type == 0)
+-	    err(YES, "Missing format spec for `%s'", o->name);
++	    errpl(YES, "Missing format spec for `%s'", o->name);
+ 	if (ptr.c == 0)
+-	    err(YES, "Null otable address for `%s'", o->name);
++	    errpl(YES, "Null otable address for `%s'", o->name);
+ 	switch (type) {
+ 	case '-':
+ 	    default_mode = NO;
+@@ -189,7 +189,7 @@
+ 	    np++;
+ 	    break;
+ 	default:
+-	    err(YES, "Table err for `%s'", o->name);
++	    errpl(YES, "Table err for `%s'", o->name);
+ 	    break;
+ 	}
+     }
+@@ -212,7 +212,7 @@
+ 		    matches++;
+ 		}
+ 	    if (matches == 0)
+-		err(NO, "No option begins with `%s'", name);
++		errpl(NO, "No option begins with `%s'", name);
+ 	}
+     else {
+ 	printf("plt version %s (compiled %s)\n", PLT_VERSION, __DATE__);
+@@ -411,7 +411,7 @@
+ 
+     while (!(in_obj(obj,sizeof(obj),IN_OBJ|SAVE_TERM)==(END_LINE+END_INPUT))) {
+ 	if (optn)
+-	    err(NO, "OPTION: `%s'\n", obj);
++	    errpl(NO, "OPTION: `%s'\n", obj);
+ 	if (obj[0] == '#') {
+ 	    do {
+ 		c = in_char();
+@@ -435,7 +435,7 @@
+ 		}
+ 	    } while (c != EOF && c != ']' && c != ')');
+ 	    if (c != ']' && c != ')')
+-		err(YES, "Unterminated fgroup spec for `%s'", o->name);
++		errpl(YES, "Unterminated fgroup spec for `%s'", o->name);
+ 	    obj[n-1] = 0;
+ 	    *o->fgnamep = StringSave(obj);
+ 	    do {
+@@ -529,7 +529,7 @@
+     char match = NO;
+ 
+     if (nflds < o->minflds)
+-	err(YES, "Too few fields for `%s'", o->name);
++	errpl(YES, "Too few fields for `%s'", o->name);
+     SetParams(o, s, nflds);
+     if (o->mode & SPECIAL) {
+ 	switch (o->mode & TYPEMASK) {
+@@ -559,7 +559,7 @@
+ 	    optnHelp(otable, s, nflds);
+ 	    break;
+ 	default:
+-	    err(YES, "Missing special case `%s'", o->name);
++	    errpl(YES, "Missing special case `%s'", o->name);
+ 	}
+     }
+ }
+@@ -572,7 +572,7 @@
+ 	if (strcmp(o->name,opt) == 0)
+ 	    return(o);
+     }
+-    err(YES, "Illegal option `%s'", opt);
++    errpl(YES, "Illegal option `%s'", opt);
+     return(NO);	/* for lint */
+ }
+ 
+@@ -594,7 +594,7 @@
+ 	    }
+ 	}
+     }
+-    err(YES, "Illegal option: `%s'", opt);
++    errpl(YES, "Illegal option: `%s'", opt);
+     return (NO);	/* for lint */
+ }
+ 
+@@ -611,11 +611,11 @@
+ static void in_file(char *name, Boolean lock)
+ {
+     if (nilev == MAXLABELFILES)
+-	err(YES, "Too many nested input streams");
++	errpl(YES, "Too many nested input streams");
+     in = &input[nilev];
+     in->fp = fopen(name, "r");
+     if (in->fp == NULL)
+-	err(YES, "Can't read file `%s'", name);
++	errpl(YES, "Can't read file `%s'", name);
+     in->type = INFILE;
+     in->name = name;
+     in->line = 0;
+@@ -626,7 +626,7 @@
+ static void in_string(char *string, Boolean lock)
+ {
+     if (nilev == MAXLABELFILES)
+-	err(YES, "Too many nested input streams");
++	errpl(YES, "Too many nested input streams");
+     in = &input[nilev];
+     in->type = STRING;
+     in->sp   = string;
+@@ -692,7 +692,7 @@
+ 	status = in_obj(obj, maxchrs, IN_OBJ);
+ 	if (status & HAVE_OBJ) {
+ 	    if (nflds == maxflds)
+-		err(YES, "Too many fields");
++		errpl(YES, "Too many fields");
+ 	    s[nflds++] = StringSave(obj);
+ 	    nchrs = strlen(obj);
+ 	    obj += (nchrs + 1);
+@@ -700,10 +700,10 @@
+ 	}
+     }
+     if (optn) {
+-	err(NO, "PARSE:");
++	errpl(NO, "PARSE:");
+ 	for (n = 0; n < nflds; n++)
+-	    err(NO, "  (%s)", s[n]);
+-	err(NO, "\n");	
++	    errpl(NO, "  (%s)", s[n]);
++	errpl(NO, "\n");	
+     }
+     return ((int)nflds);
+ }
+@@ -762,7 +762,7 @@
+ 	    break;
+ 	case '}':
+ 	    if (nbrack == 0)
+-		err(NO, "Stray '}' -- line %d of %s\n", in->line, in->name);
++		errpl(NO, "Stray '}' -- line %d of %s\n", in->line, in->name);
+ 	    if (--nbrack == 0)
+ 		status |= END_INPUT;
+ 	    break;
+@@ -802,7 +802,7 @@
+ 		maxchrs--;
+ 	    }
+ 	    else if (first) {
+-		err(NO, "Line `%.25s...' too long", obj);
++		errpl(NO, "Line `%.25s...' too long", obj);
+ 		first = NO;
+ 	    }
+ 	}
+@@ -810,13 +810,13 @@
+ 	    c = in_char();
+     } while (status == 0);
+     if (nbrack > 0)
+-	err(NO, "Missing '}' for `%.10s...'\n", obj);
++	errpl(NO, "Missing '}' for `%.10s...'\n", obj);
+     if (nchrs > 0)
+ 	status |= HAVE_OBJ;
+     obj[nchrs] = 0;
+     if (optn)
+-	err(NO, "OBJECT: (%s)\n", obj);
++	errpl(NO, "OBJECT: (%s)\n", obj);
+     if (quote)
+-	err(NO, "Unmatched quote in format specification");
++	errpl(NO, "Unmatched quote in format specification");
+     return ((int)status);
+ }
