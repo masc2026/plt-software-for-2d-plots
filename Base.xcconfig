@@ -1,0 +1,23 @@
+//
+//  Base.xcconfig
+//  ECGPlot
+//
+//  Created by Markus Schmid on 02.03.26.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+// Zentraler Pfad für X11 (XQuartz Standard)
+X11_ROOT = /opt/X11
+
+// Header-Suchpfade (ersetzt die manuelle User-Defined Variable)
+HEADER_SEARCH_PATHS = $(inherited) $(X11_ROOT)/include
+
+// Pfad zu den Bibliotheken
+LIBRARY_SEARCH_PATHS = $(inherited) $(X11_ROOT)/lib
+
+// Linker-Flags: -lX11 sucht automatisch nach libX11.dylib in den Library Search Paths
+OTHER_LDFLAGS = $(inherited) -lX11
+
+CONFIGURATION_BUILD_DIR = $(SRCROOT)/build/$(CONFIGURATION)

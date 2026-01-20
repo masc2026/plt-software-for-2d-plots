@@ -1,0 +1,11 @@
+--- a/plt-2.5a/src/makeplthead.c
++++ b/plt-2.5a/src/makeplthead.c
+@@ -44,7 +44,7 @@
+ #define DEFX1 7.975
+ #define	DEFY1 9.350
+ 
+-main(argc, argv)
++int main(argc, argv)
+ int argc;
+ char **argv;
+ {

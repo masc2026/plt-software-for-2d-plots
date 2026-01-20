@@ -1,0 +1,38 @@
+--- a/plt-2.5a/src/pterm.c
++++ b/plt-2.5a/src/pterm.c
+@@ -31,6 +31,7 @@
+ roundoff errors in small motions.
+ */
+ 
++#include <unistd.h>
+ #include	"plt.h"
+ 
+ struct pdev pdevs[] = {
+@@ -41,23 +42,23 @@
+   0, 0, 0, 0.20, 0.95, 0.20, 0.85, 0, 0, 7.2, 6,
+ };
+ 
+-int PTERMLookup(char *ptermName, char *hardwired)
++void PTERMLookup(char *ptermName, char *hardwired)
+ {
+   if (hardwired) {
+     for (p=pdevs; p < ENDP(pdevs); p++)
+       if (strcmp(hardwired,p->pterm) == 0)
+ 	break;
+     if (p == ENDP(pdevs))
+-      err(NO, "Driver error, no PTERM `%s'");
++        errpl(NO, "Driver error, no PTERM `%s'");
+     if (strcmp(ptermName,hardwired) != 0)
+-      err(NO, "Program hardwired for PTERM `%s'", hardwired);
++        errpl(NO, "Program hardwired for PTERM `%s'", hardwired);
+   }
+   else {
+     for (p=pdevs; p < ENDP(pdevs); p++)
+       if (strcmp(ptermName,p->pterm) == 0)
+ 	break;
+     if (p == ENDP(pdevs))
+-      err(NO, "Unrecognized PTERM `%s'", ptermName);
++        errpl(NO, "Unrecognized PTERM `%s'", ptermName);
+   }
+   if (p == ENDP(pdevs)) p = pdevs;
+   if ((p->mode&SEP_GRAPH) == 0 && !isatty(fileno(stdout)))

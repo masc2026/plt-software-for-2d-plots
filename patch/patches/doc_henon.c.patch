@@ -1,0 +1,24 @@
+--- a/plt-2.5a/doc/henon.c
++++ b/plt-2.5a/doc/henon.c
+@@ -1,10 +1,11 @@
+ /* file: henon.c		G. Moody	24 April 2001
+ 
+-Evaluate the Hénon recurrence
++Evaluate the HŽnon recurrence
+ */
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
+ 
+ main(int argc, char **argv)
+ {
+@@ -13,7 +14,7 @@
+ 
+     if (argc > 1 && strcmp(argv[1], "-h") == 0) {
+ 	fprintf(stderr, "usage: %s [ A B [ X0 Y0 ] [ N ] ]\n"
+-	   "where A and B are the coefficients in the Hénon recurrence:\n"
++	   "where A and B are the coefficients in the HŽnon recurrence:\n"
+ 	   "               H(x,y) = (y + 1 - Ax^2, Bx)\n"
+ 	   "X0 and Y0 are the initial values for x and y, and N is the\n"
+ 	   "number of iterations (defaults: A = 1.4, B = .3, X0 = Y0 = 0,\n"

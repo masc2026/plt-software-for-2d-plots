@@ -1,0 +1,42 @@
+--- a/plt-2.5a/src/plt.h
++++ b/plt-2.5a/src/plt.h
+@@ -449,10 +449,10 @@
+    add a driver for a new device, it must implement these functions. */
+ void openpl(void);
+ void closepl(void);
+-void erase(void);
++void erasepl(void);
+ void space(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void label(char *lbl);
+-void move(Ptype x, Ptype y);
++void movepl(Ptype x, Ptype y);
+ void line(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void cont(Ptype x, Ptype y);
+ void plabel(char *lbl, Ptype x, Ptype y, char *just, double angle);
+@@ -500,7 +500,7 @@
+ Ptype Y(double y);
+ 
+ /* Functions defined in pterm.c */
+-int PTERMLookup(char *ptermName, char *hardwired);
++void PTERMLookup(char *ptermName, char *hardwired);
+ 
+ /* Functions defined in text.c */
+ void TextInit(int psdel);
+@@ -510,7 +510,7 @@
+ char *JustMap(char *userTbc);
+ void FontGroupSelect(char *dflt_fgName, char *fgName);
+ void FontGroupDef(char *fgName, char *specs);
+-int getstr(char **cpp, char **strp);
++int getstrpl(char **cpp, char **strp);
+ 
+ /* Functions defined in tick.c */
+ void LinearTickLogic(AxisPtr a);
+@@ -520,7 +520,7 @@
+ void *azmem(void *ptr, size_t *current_elements, size_t new_elements,
+ 	    size_t element_size);
+ double DoubleNum(char *str);
+-void err(int fatal, char *fmt, ...);
++void errpl(int fatal, char *fmt, ...);
+ long LongNum(char *str);
+ void pinit(void);
+ void pquit(int signo);

@@ -1,0 +1,78 @@
+--- a/plt-2.5a/src/Makefile
++++ b/plt-2.5a/src/Makefile
+@@ -46,7 +46,11 @@
+ #  -DNO_VSNPRINTF  (if your C library is missing vsnprintf;  but note that
+ #	 	    the alternative, using vsprintf, is a security problem,
+ #		    and that it's better to update your C library if you can)
+-CFLAGS = -O
++ifeq ($(CONFIGURATION),Debug)
++    CFLAGS = -g -O0
++else
++    CFLAGS = -O3
++endif
+ 
+ # ----------------------------------------------------------------------------
+ # Pathnames of programs used by 'plt' that are not part of the 'plt' package
+@@ -58,14 +62,26 @@
+ 
+ # CONVERT is the full pathname of the 'convert' application (part of
+ # ImageMagick, http://www.imagemagick.org), needed to make PNG plots.
+-CONVERT = /usr/bin/convert
++#CONVERT = /usr/bin/convert
+ 
++CONVERT := $(shell which magick 2>/dev/null)
++
+ # EPSTOPDF is the full pathname of the 'epstopdf' application, available from
+ # CTAN at http://tug.ctan.org/tex-archive/support/epstopdf/, and included
+ # in the tetex, TeX Live (http://www.tug.org/texlive/), and MiKTeX
+ # (http://www.miktex.org/) distributions.  EPSTOPDF is needed to make PDF plots.
+ EPSTOPDF = /usr/bin/epstopdf
+ 
++# Erkennung des Betriebssystems
++UNAME_S := $(shell uname -s)
++
++ifeq ($(UNAME_S),Darwin)
++    # PSTOPDF muss für macos gesetzt werden
++else
++    # Standard für Nicht-macOS Systeme (z.B. Linux)
++    PSTOPDF = ps2pdf
++endif
++
+ # GV is the full pathname of a viewer for PostScript files,
+ # such as 'gv' (http://www.gnu.org/software/gv/) or
+ # 'evince' (http://www.gnome.org/projects/evince/), used by 'lwcat -gv'.
+@@ -82,7 +98,7 @@
+ # ----------------------------------------------------------------------------
+ 
+ # SFILES is a list of shell scripts.
+-SFILES = gvcat lwcat plt pltpng
++SFILES = gvcat lwcat plt pltpng pstopdfcat
+ 
+ # XFILES is a list of compiled executable files.
+ XFILES = lwplt makeplthead xplt xpltwin
+@@ -117,6 +133,7 @@
+ 	if [ -d $(XINCDIR) ]; then cp xplt xpltwin $(BINDIR); fi
+ 	cp lwplt makeplthead plt pltpng $(BINDIR)
+ 	sed s%GV%$(GV)% <gvcat >$(BINDIR)/gvcat
++	sed s%\PSTOPDF%$(PSTOPDF)% <pstopdfcat >$(BINDIR)/pstopdfcat
+ 	sed s%PSPDIR%$(PREFIX)/lib/ps% <lwcat | \
+ 	 sed s%BINDIR%$(BINDIR)% | sed s%LPR%$(LPR)% | \
+ 	 sed s%EPSTOPDF%$(EPSTOPDF)% >$(BINDIR)/lwcat
+@@ -125,10 +142,10 @@
+ 	cd $(BINDIR); chmod -f 755 $(INSTFILES)
+ 	cp plt.pro $(PSPDIR)
+ 	chmod 644 $(PSPDIR)/plt.pro
+-
++	
+ # 'make uninstall':  remove all installed files
+ uninstall:
+-	cd $(BINDIR); rm -f $(INSTFILES) $(EXEFILES)
++	cd $(BINDIR) && rm -f $(INSTFILES) $(EXEFILES)
+ 	rm -f $(PSPDIR)/plt.pro
+ 
+ # PostScript driver for plt
+@@ -163,3 +180,4 @@
+ # Remove binary and backup files.
+ clean:
+ 	rm -f $(XFILES) $(EXEFILES) *.o *~ core
++	-rm -rf *.dSYM

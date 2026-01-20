@@ -1,0 +1,128 @@
+--- a/plt-2.5a/src/lw.c
++++ b/plt-2.5a/src/lw.c
+@@ -44,10 +44,10 @@
+ /* Prototypes of functions defined in this module */
+ void openpl(void);
+ void closepl(void);
+-void erase(void);
++void erasepl(void);
+ void space(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void label(char *lbl);
+-void move(Ptype x, Ptype y);
++void movepl(Ptype x, Ptype y);
+ void line(Ptype x0, Ptype y0, Ptype x1, Ptype y1);
+ void cont(Ptype x, Ptype y);
+ void plabel(char *lbl, Ptype x, Ptype y, char *just, double angle);
+@@ -89,7 +89,7 @@
+     fflush(stdout);
+ }
+ 
+-void erase(void)
++void erasepl(void)
+ {
+     /* This space intentionally left void :-) */
+ }
+@@ -109,7 +109,7 @@
+     npath = 0;
+ }
+ 
+-void move(Ptype x, Ptype y)
++void movepl(Ptype x, Ptype y)
+ {
+     flushpath();
+     printf("%ld %ld M\n", (long)x, (long)y);
+@@ -120,7 +120,7 @@
+ 
+ void line(Ptype x0, Ptype y0, Ptype x1, Ptype y1)
+ {
+-    move(x1, y1);
++    movepl(x1, y1);
+     printf("%ld %ld L\n", (long)(x0-oldx), (long)(y0-oldy));
+     npath = 0;
+ }
+@@ -128,7 +128,7 @@
+ void cont(Ptype x, Ptype y)
+ {
+     if (npath == 0)
+-	err(YES, "Called cont() before move()");
++	errpl(YES, "Called cont() before move()");
+ 
+     if (npath == MAXPATH-1) {
+ 	printf("%ld %ld L\n%ld %ld M\n",
+@@ -189,7 +189,7 @@
+ 	    break;
+     }
+     if (j == ENDP(jtypes)) {
+-	err(NO, "Unknown mode `%s' in plabel(%s,...)", just, lbl);
++	errpl(NO, "Unknown mode `%s' in plabel(%s,...)", just, lbl);
+     }
+     else {
+ 	sendstring(lbl);
+@@ -263,7 +263,7 @@
+ 	    yax_roff = off;
+     }
+     else
+-	err(YES, "Bad call: elabel(%s,...)", what);
++	errpl(YES, "Bad call: elabel(%s,...)", what);
+ }
+ 
+ /* For the PostScript driver, there is no proper string size function --
+@@ -285,7 +285,7 @@
+ 	*ysize = chwd * strlen(str);
+     }
+     else
+-	err(NO, "Bad angle %.5lg in for strsize(%s,...)", angle, str);
++	errpl(NO, "Bad angle %.5lg in for strsize(%s,...)", angle, str);
+ }
+ 
+ void scatterplot(PltPtr plt, Ptype x, Ptype y, Ptype yneg, Ptype ypos)
+@@ -313,7 +313,7 @@
+     fill = -1;
+     switch (what) {
+     case CMOVE:
+-	move(x, y);
++	movepl(x, y);
+ 	break;
+     case CBBCONT:
+     case CCONT:
+@@ -335,7 +335,7 @@
+ 	fill = 1;
+ 	break;
+     default:
+-	err(YES, "Bad PolyDef() code %d", what);
++	errpl(YES, "Bad PolyDef() code %d", what);
+     }
+     if (fill >= 0) {
+ 	printf("%d F\n", fill);
+@@ -442,11 +442,11 @@
+     for (f = fonts;  f->code != NULL && strcmp(fontcode, f->code) != 0; f++)
+ 	;
+     if (f->code == NULL) {
+-	err(NO, "Unknown font: %s -- Using: %s", name, DEFAULT_FONT);
++	errpl(NO, "Unknown font: %s -- Using: %s", name, DEFAULT_FONT);
+ 	f->name = DEFAULT_FONT;
+     }
+     if (ps < 0 ) {
+-	err(NO, "Bad font size: %.5lg -- Using %g", ps, DEFAULT_PS);
++	errpl(NO, "Bad font size: %.5lg -- Using %g", ps, DEFAULT_PS);
+ 	ps = DEFAULT_PS;
+     }
+     if (prev_ps != ps || prev_name != f->name) {
+@@ -461,7 +461,7 @@
+     static double prev_lw = -1;
+ 
+     if (lw < 0) {
+-	err(NO, "Bad line width: %.5lg", lw);
++	errpl(NO, "Bad line width: %.5lg", lw);
+ 	lw = 2;
+     }
+     if (prev_lw != lw)
+@@ -480,7 +480,7 @@
+ static void setgray(double grey)
+ {
+     if (grey < 0 || grey > 1) {
+-	err(NO, "Bad grey value: %.5lg", grey);
++	errpl(NO, "Bad grey value: %.5lg", grey);
+ 	grey = 0;
+     }
+     else if (ored >= 0) {

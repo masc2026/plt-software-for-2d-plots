@@ -1,0 +1,19 @@
+#!/bin/sh
+# file: pstopdfcat			M. Schmid	19 August 2023
+#           Last revised:   02 March 2026
+#
+
+TMP=${MACOSTMP:-/tmp/}
+cat > ${TMP}pstopdf.ps
+# $PSTOPDF wird im Makefile (per sed) ersetzt
+# Prüfen, ob das ersetzte Tool "ps2pdf" im Namen trägt
+if echo "PSTOPDF" | grep -q "ps2pdf"; then
+    # Ghostscript / Brew Version (kein -o nötig)
+    PSTOPDF "${TMP}pstopdf.ps" "${TMP}pstopdf.pdf" > /dev/null 2>&1
+else
+    # Apple / LInux Version (braucht -o für den Output)
+    PSTOPDF "${TMP}pstopdf.ps" -o "${TMP}pstopdf.pdf" > /dev/null 2>&1
+fi
+cat ${TMP}pstopdf.pdf
+rm -f ${TMP}pstopdf.ps
+rm -f ${TMP}pstopdf.pdf

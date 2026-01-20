@@ -1,0 +1,110 @@
+--- a/plt-2.5a/src/text.c
++++ b/plt-2.5a/src/text.c
+@@ -53,7 +53,7 @@
+ char *JustMap(char *userTbc);
+ void FontGroupSelect(char *dflt_fgName, char *fgName);
+ void FontGroupDef(char *fgName, char *specs);
+-int getstr(char **cpp, char **strp);
++int getstrpl(char **cpp, char **strp);
+ 
+ static FgPtr FontGroupCat(char *fgName, char *changes);
+ static void FontGroupModify(FgPtr fg, char *changes);
+@@ -180,7 +180,7 @@
+ 
+   if (ps->file) {
+     fp = fopen(ps->str, "r");
+-    if (fp == 0) err(YES, "Can't open string file %s", ps->str);
++    if (fp == 0) errpl(YES, "Can't open string file %s", ps->str);
+   }
+   else str = ps->str;
+   while (YES) {
+@@ -226,10 +226,10 @@
+     case 'L': tbc[1] = 'B'; break;
+     case 'U': tbc[0] = 'R'; /* fall through to case 'R' */
+     case 'R': tbc[1] = 'B'; break;
+-    default:  err(YES, "unrecognized text box coordinate `%s'\n", userTbc);
++    default:  errpl(YES, "unrecognized text box coordinate `%s'\n", userTbc);
+       break;
+     }
+-    err(NO, "Warning: obsolete text box coordinate `%s' converted to `%s'\n",
++      errpl(NO, "Warning: obsolete text box coordinate `%s' converted to `%s'\n",
+ 	    userTbc, tbc);
+   }
+   
+@@ -250,7 +250,7 @@
+   }
+   else {
+     if (dflt_fgName == 0)
+-      err(YES, "Bad call to FontGroupSelect()");
++        errpl(YES, "Bad call to FontGroupSelect()");
+     fg = FontGroupFind(dflt_fgName, YES);
+   }
+ 
+@@ -370,20 +370,20 @@
+     case '\t':
+       break;
+     case GCOLOR:
+-      errFlag |= !getstr(&cp, &fg->color);
++      errFlag |= !getstrpl(&cp, &fg->color);
+       break;
+     case GELEMENT:	/* vestigial, see comments above */
+-      errFlag |= !getstr(&cp, &fg->gelem);
++      errFlag |= !getstrpl(&cp, &fg->gelem);
+       break;
+     case GFONT:
+-      errFlag |= !getstr(&cp, &fg->font);
++      errFlag |= !getstrpl(&cp, &fg->font);
+       break;
+     case GGRAY:
+       errFlag |= !getdbl(&cp,&fg->gray);
+       if (fg->gray > 1) fg->gray = 1;
+       break;
+     case GLINEMODE:
+-      errFlag |= !getstr(&cp, &fg->lm);
++      errFlag |= !getstrpl(&cp, &fg->lm);
+       checklm(fg);
+       break;
+     case GPS:
+@@ -394,7 +394,7 @@
+       break;
+     default:
+       cp--;
+-      errFlag |= !getstr(&cp, &fgName);
++      errFlag |= !getstrpl(&cp, &fgName);
+       fgnew = FontGroupFind(fgName, NO);
+       if (fgnew == 0) errFlag = YES;
+       else {
+@@ -405,7 +405,7 @@
+       break;
+     }
+     if (errFlag) {
+-      err(YES, "Font group syntax error `%s'", changes);
++        errpl(YES, "Font group syntax error `%s'", changes);
+       break;
+     }
+   }
+@@ -425,7 +425,7 @@
+       return (fg);
+   }
+   if (mustFind)
+-    err(YES, "No font group `%s'", fgName);
++      errpl(YES, "No font group `%s'", fgName);
+   return (0);
+ }
+ 
+@@ -448,7 +448,7 @@
+   return (fg);
+ }
+ 
+-int getstr(char **cpp, char **strp)
++int getstrpl(char **cpp, char **strp)
+ {
+   short n;
+   char *cp, str[MAXLINE];
+@@ -537,5 +537,5 @@
+       fg->lm = lm[l->n].name;	/* ... and this is why !!!!!!!! */
+       return;
+     }
+-  err(YES, "No linemode type `%s'", fg->lm);
++    errpl(YES, "No linemode type `%s'", fg->lm);
+ }

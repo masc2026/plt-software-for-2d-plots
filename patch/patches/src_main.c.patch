@@ -1,0 +1,38 @@
+--- a/plt-2.5a/src/main.c
++++ b/plt-2.5a/src/main.c
+@@ -78,7 +78,7 @@
+ 
+   if (xa.min == DEFAULT || xa.max == DEFAULT ||
+       ya.min == DEFAULT || ya.max == DEFAULT) {
+-    if (Data.nCols == 0) err(YES, "Must specify axis limits");
++    if (Data.nCols == 0) errpl(YES, "Must specify axis limits");
+   }
+   else if (Plot.nPlts == 1) {
+     Plot.quickPlot = YES;
+@@ -92,7 +92,7 @@
+   if (axisfile) {
+     fp = fopen(axisfile, "w");
+     if (fp == 0)
+-      err(YES, "Can't open %s for writing axis specs", axisfile);
++        errpl(YES, "Can't open %s for writing axis specs", axisfile);
+     fprintf(fp, "xa %g %g %g %s %d %g\n",
+ 	    xa.min, xa.max, xa.tick, xa.pfm, xa.skp, xa.cr);
+     fprintf(fp, "ya %g %g %g %s %d %g\n",
+@@ -104,7 +104,7 @@
+ 
+   pinit();
+   space(0, 0, p->xsquare, p->yfull);
+-  if (omode & ERASE) erase();
++  if (omode & ERASE) erasepl();
+   if (xa.mode) XAxisDraw();
+   if (ya.mode) YAxisDraw();
+   MakeGraphTitle(argv+1);
+@@ -126,7 +126,7 @@
+       TextDraw(&Figure.lbls[n]);
+ 
+   if (Plot.excluded)
+-    err(NO, "*** Excluded %ld points ***", Plot.excluded);
++      errpl(NO, "*** Excluded %ld points ***", Plot.excluded);
+ 
+   pquit(0);
+   return (0);	/* This is only here to satisfy some compilers -- pquit doesn't

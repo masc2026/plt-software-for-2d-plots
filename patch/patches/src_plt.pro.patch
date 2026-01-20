@@ -1,0 +1,13 @@
+--- a/plt-2.5a/src/plt.pro
++++ b/plt-2.5a/src/plt.pro
+@@ -110,3 +110,10 @@
+ /SDM	{DMTX setmatrix} def
+ /FILL	{gsave setgray fill grestore} def
+ /PBOX	{pathbbox /y1 ED /x1 ED /y0 ED /x0 ED} def
++
++/PAGESIZE {
++    /pgpinch exch def
++    /pgwidth exch pgpinch mul def
++    /pgheight exch pgpinch mul def
++    << /PageSize [pgwidth pgheight] >> setpagedevice
++} def

@@ -1,0 +1,67 @@
+--- a/plt-2.5a/src/util.c
++++ b/plt-2.5a/src/util.c
+@@ -61,7 +61,7 @@
+   void *ptr;
+ 
+   if (n == 0 || size == 0 || (ptr = calloc(n,size)) == NULL)
+-    err(YES, "Out of memory in zmem.  Can't allocate %u bytes", n*size);
++      errpl(YES, "Out of memory in zmem.  Can't allocate %u bytes", n*size);
+   return (ptr);
+ }
+ 
+@@ -80,7 +80,7 @@
+   else
+     ptr = realloc(ptr, new_size);
+   if (ptr == NULL)
+-    err(YES, "Out of memory in azmem.  Can't allocate %u bytes",
++      errpl(YES, "Out of memory in azmem.  Can't allocate %u bytes",
+ 	new_elements * element_size);
+   for (c = ptr + old_size, cend = ptr + new_size; c < cend; c++)
+     *c = 0;
+@@ -93,8 +93,8 @@
+   char	*ptr;
+ 
+   if (str == NULL) {
+-    err(NO, "BUG: called StringSave(0)");
+-    return (NULL);
++      errpl(NO, "BUG: called StringSave(0)");
++      return (NULL);
+   }
+   ptr = zmem(1, strlen(str) + 1);
+   strcpy(ptr, str);
+@@ -116,7 +116,7 @@
+    corruption can follow.  vsnprintf avoids this problem because it will not
+    write beyond the end of the buffer,  Upgrade your libraries if necessary;
+    avoid using vsprintf if possible. */
+-void err(int fatal, char *fmt, ...)
++void errpl(int fatal, char *fmt, ...)
+ {
+   short n;
+   char str[200];
+@@ -148,7 +148,7 @@
+ /* For debugging.  See the definition of ASSERT in plot.h. */
+ void assert(char *text, char *file, int line)
+ {
+-  err(YES, "Assertion false at %s(%d): %s\n",  file, line, text);
++  errpl(YES, "Assertion false at %s(%d): %s\n",  file, line, text);
+ }
+ 
+ /* Exit as gracefully as possible. */
+@@ -192,7 +192,7 @@
+   strcat(line, "?");
+   check_char = 0;
+   sscanf(line, "%lf%c", &dbl, &check_char);
+-  if (check_char != '?') err(YES, "Expected number, found `%s'", str);
++  if (check_char != '?') errpl(YES, "Expected number, found `%s'", str);
+ #else
+   /* Cygwin 1.3.1 has a buggy sscanf, so we use atof to do the conversion
+      instead, and forego the input-checking. */
+@@ -208,7 +208,7 @@
+ 
+   dbl = DoubleNum(str);
+   if ((int)dbl != dbl)
+-    err(YES, "Expected integer, found `%s'", str);
++    errpl(YES, "Expected integer, found `%s'", str);
+   return ((int)dbl);
+ }
+   
